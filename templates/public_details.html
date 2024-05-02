@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Owli | Public Quiz {{ quiz.id }} details{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="quiz_details_container">
+    <div class="generate_code">
+        <h1>{{ quiz.title }}</h1>
+        <a href="{{ url_for('main.start_quiz', quiz_id=quiz.id) }}" class="startQuiz_Btn">Start Quiz</a>
+    </div>
+    <div class="quiz-info-table">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Description:</td>
+                    <td>{{ quiz.description }}</td>
+                </tr>
+                <tr>
+                    <td>Created:</td>
+                    <td>{{ quiz.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                <tr>
+                    <td>Last Modified:</td>
+                    <td>{{ quiz.modified_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                <tr>
+                    <td>Time for one question:</td>
+                    <td>{{ quiz.duration }} seconds</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+
+    {% for question in quiz.questions %}
+    <div class="quiz_edit_question">
+        <div class="question_edit_Quiz">
+            <h5>Question: {{ question.text }}</h5>
+
+            {% if question.image_url %}
+                <img class="question_image" src="{{ url_for('static', filename='users_pictures/' + question.image_url) }}" alt="question image">
+            {% endif %}
+            
+            <h5>Answers:</h5>
+            {% if question.question_type == 'open_question'%}
+            <div> 
+                <h5> This is an open question. </h5> 
+            </div>
+            {% elif question.choices %}
+            <div>
+                {% for choice in question.choices %}
+                    <h5>{{ choice.text }} {% if choice.is_correct %} <- Correct Answer</h5>{% else %}</h5>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div>
+                <h5> This question does not have any choices. </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if loop.last %}
+    </div>
+{% endif %}
+{% endfor %}
+
+</div>
+    {%endblock%}
